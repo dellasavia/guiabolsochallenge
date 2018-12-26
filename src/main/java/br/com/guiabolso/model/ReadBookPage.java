@@ -32,7 +32,6 @@ public class ReadBookPage {
             sb.append(line);
         }
         String html = sb.toString();
-        //String html = new Scanner(new URL(mainURL).openStream(), "UTF-8").useDelimiter("\\A").next();
         Document doc = Jsoup.parse(html);
 
         Elements elements = doc.getAllElements();
@@ -41,6 +40,7 @@ public class ReadBookPage {
         boolean newItem = true;
         for (Element item : elements) {
 
+            // tag <h2> indica um novo livro
             if ("h2".equals(item.tagName())) {
                 book = new Book();
                 description = new StringBuilder();
@@ -56,7 +56,6 @@ public class ReadBookPage {
                 Element link = subDoc.select("a").first();
                 if (link != null && newItem) {
                     String url = link.attr("href");
-                    System.out.println(url);
                     ExtractISBN isbn = ExtractISBN.getInstance(url);
                     book.setISBN(isbn.getValue(url));
                     newItem = false;
@@ -67,30 +66,10 @@ public class ReadBookPage {
                 book.setLanguage(item.text());
                 books.add(book);
             }
-
         }
-
     }
 
     public List<Book> getBooks() {
         return books;
     }
-
-    public static void main(String[] args) throws MalformedURLException, IOException {
-        //String html = new Scanner(new URL("https://kotlinlang.org/docs/books.html").openStream(), "UTF-8").useDelimiter("\\A").next();
-
-        ReadBookPage rbp = new ReadBookPage("https://kotlinlang.org/docs/books.html");
-
-        List<Book> books = rbp.getBooks();
-
-        for (Book book : books) {
-            System.out.println(book.getTitle());
-            System.out.println(book.getDescription());
-            System.out.println(book.getLanguage());
-            System.out.println(book.getISBN());
-            System.out.println("");
-        }
-
-    }
-
 }
