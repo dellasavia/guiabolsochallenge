@@ -22,6 +22,12 @@ public class ReadBookPage {
 
     private final List<Book> books = new ArrayList<>();
 
+    private final String BOOK_INDICATOR = "h2";
+
+    private final String DESCRIPTION_INDICATOR = "p";
+
+    private final String LANGUAGE_INDICATOR = "book-lang";
+
     public ReadBookPage(String mainURL) throws MalformedURLException, IOException {
         URL ur1l = new URL(mainURL);
         InputStream is = (InputStream) ur1l.getContent();
@@ -34,36 +40,37 @@ public class ReadBookPage {
         String html = sb.toString();
         Document doc = Jsoup.parse(html);
 
-        Elements elements = doc.getAllElements();
+        Elements allTagsOfPage = doc.getAllElements();
         Book book = new Book();
         StringBuilder description = new StringBuilder();
         boolean newItem = true;
-        for (Element item : elements) {
 
-            // tag <h2> indica um novo livro
-            if ("h2".equals(item.tagName())) {
+        for (Element currentTag : allTagsOfPage) {
+
+            if (BOOK_INDICATOR.equals(currentTag.tagName())) {
                 book = new Book();
                 description = new StringBuilder();
-                book.setTitle(item.text());
+                book.setTitle(currentTag.text());
                 newItem = true;
             }
 
-            if ("p".equals(item.tagName())) {
-                description.append(item.text());
+            if (DESCRIPTION_INDICATOR.equals(currentTag.tagName())) {
+                description.append(currentTag.text());
                 book.setDescription(description.toString());
 
-                Document subDoc = Jsoup.parse(item.html());
-                Element link = subDoc.select("a").first();
-                if (link != null && newItem) {
-                    String url = link.attr("href");
+                Document subDoc = Jsoup.parse(currentTag.html());
+                Element linkToGetISBN = subDoc.select("a").first();
+
+                if (linkToGetISBN != null && newItem) {
+                    String url = linkToGetISBN.attr("href");
                     ExtractISBN isbn = ExtractISBN.getInstance(url);
                     book.setISBN(isbn.getValue(url));
                     newItem = false;
                 }
             }
 
-            if ("book-lang".equals(item.className())) {
-                book.setLanguage(item.text());
+            if (LANGUAGE_INDICATOR.equals(currentTag.className())) {
+                book.setLanguage(currentTag.text());
                 books.add(book);
             }
         }
