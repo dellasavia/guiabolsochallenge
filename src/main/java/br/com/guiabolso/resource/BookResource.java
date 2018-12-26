@@ -2,6 +2,7 @@ package br.com.guiabolso.resource;
 
 import br.com.guiabolso.domain.Book;
 import br.com.guiabolso.model.ReadBookPage;
+import br.com.guiabolso.model.ResultBookJSON;
 import br.com.guiabolso.service.BookService;
 import java.io.IOException;
 import java.net.URI;
@@ -68,7 +69,7 @@ public class BookResource {
      */
     @Cacheable("books")
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Book>> findAll() {
+    public ResponseEntity<ResultBookJSON> findAll() {
 
         List<Book> books = new ArrayList<>();
 
@@ -80,7 +81,7 @@ public class BookResource {
             Logger.getLogger(BookResource.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(books);
+        return ResponseEntity.status(HttpStatus.OK).body(ResultBookJSON.getInstance(books));
     }
 
 }
