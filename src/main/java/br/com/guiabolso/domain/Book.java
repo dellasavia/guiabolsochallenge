@@ -22,6 +22,16 @@ public class Book implements Serializable {
     private String ISBN;
     private String language;
 
+    public Book() {
+    }
+
+    public Book(String title, String description, String ISBN, String language) {
+        this.title = title;
+        this.description = description;
+        this.ISBN = ISBN;
+        this.language = language;
+    }
+
     public Integer getId() {
         return id;
     }
